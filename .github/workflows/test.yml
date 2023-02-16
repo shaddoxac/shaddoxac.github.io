@@ -1,0 +1,15 @@
+name: Test
+on: [push]
+env:
+  PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+jobs:
+  Test:
+    runs-on: ubuntu-20.04
+    container: python:3.10
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: pip config set global.extra-index-url "https://pypi:${PYPI_PASSWORD}@pypi.labs.valorep.com/simple"
+      - run: pip install -r requirements.txt
+      - run: flake8 --ignore=F401,W503 --max-line-length=120 --exclude='.cache,.git,*migrations*,static/lib' .
+      - run: black --check --exclude='.cache,.git,*migrations*,static/lib' .
